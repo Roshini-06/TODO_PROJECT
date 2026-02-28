@@ -1,0 +1,46 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>To-Do List</title>
+    <link rel="stylesheet" href="{% static 'tasks/css/style.css' %}">
+</head>
+<body>
+<div class="container">
+    <h1>My To-Do List</h1>
+
+    <form method="POST" action="/add/" class="task-form">
+        {% csrf_token %}
+        <input type="text" name="title" placeholder="Enter task title" required>
+        <input type="text" name="description" placeholder="Enter description (optional)">
+        <button type="submit">Add Task</button>
+    </form>
+
+    <div class="task-stats" >
+        <span>Total: {{ total_count }}</span>
+        <span>Pending: {{ pending_count }}</span>
+        <span>Completed: {{ completed_count }}</span>
+    </div>
+
+    <div class="task-list">
+        {% for task in tasks %}
+        <div class="task-card {% if task.status == 'Completed' %}completed{% endif %}">
+            <div class="task-content">
+                <h3>{{ task.title }}</h3>
+                <p>{{ task.description }}</p>
+                <small>{{ task.created_at }}</small>
+            </div>
+            <div class="task-actions">
+                {% if task.status == 'Pending' %}
+                <a href="/complete/{{ task.id }}/" class="complete-btn">Complete</a>
+                {% endif %}
+                <a href="/delete/{{ task.id }}/" class="delete-btn">Delete</a>
+            </div>
+        </div>
+        {% empty %}
+        <p class="empty">No tasks available.</p>
+        {% endfor %}
+    </div>
+</div>
+</body>
+</html>
